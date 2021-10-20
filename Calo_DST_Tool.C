@@ -23,15 +23,15 @@ CaloDstTool::CaloDstTool(const std::string &name):
 }
 
 int CaloDstTool::InitRun(PHCompositeNode *topNode) {
-    this->energyScale = new TH1F("eScale", "EEEMC Single Electron Energy Scale", 100, -0.5, 1.2);
+    this->energyScale = new TH1F("eScale", Form("%s Single Electron Energy Scale", this->detector.c_str()), 100, -0.5, 1.2);
     this->energyScale->GetXaxis()->SetTitle("(ge - e) / ge");
     this->energyScale->GetYaxis()->SetTitle("Counts");
 
-    this->eScaleEta = new TH2F("eScaleEta", "EEEMC Single Electron Energy Scale", 100, -4, -1, 100, -0.5, 1.2);
+    this->eScaleEta = new TH2F("eScaleEta", Form("%s Single Electron Energy Scale", this->detector.c_str()), 100, -3.7, -3.7, 100, -0.5, 1.2);
     this->eScaleEta->GetXaxis()->SetTitle("gEta");
     this->eScaleEta->GetYaxis()->SetTitle("(ge - e) / ge");
     
-    this->eScaleGe = new TH2F("eScaleGe", "EEEMC Single Electron Energy Scale", 100, 0, 80, 100, -0.5, 1.2);
+    this->eScaleGe = new TH2F("eScaleGe", Form("%s Single Electron Energy Scale", this->detector.c_str()), 100, 0, 80, 100, -0.5, 1.2);
     this->eScaleGe->GetXaxis()->SetTitle("ge");
     this->eScaleGe->GetYaxis()->SetTitle("(ge - e) / ge");
     return Fun4AllReturnCodes::EVENT_OK;
@@ -86,10 +86,10 @@ int CaloDstTool::process_event(PHCompositeNode *topNode) {
     }
     // std::cout << PHWHERE << ": Found " << total_particles << " truth particles" << std::endl;
 
-    float scale = (ge_total - e_total) / ge_total;
     if (e_total < 0.1) {
-        scale = -0.4;
+        return Fun4AllReturnCodes::EVENT_OK;
     }
+    float scale = (ge_total - e_total) / ge_total;
     this->energyScale->Fill(scale);
     this->eScaleEta->Fill(eta, scale);
     this->eScaleGe->Fill(ge_total, scale);

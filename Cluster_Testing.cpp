@@ -1,5 +1,4 @@
 #include <TROOT.h>
-#include <TString.h>
 
 #include <fun4all/Fun4AllServer.h>
 
@@ -8,7 +7,7 @@
 
 R__LOAD_LIBRARY(libfun4all.so)
 
-int BEMC_Cluster_Testing(const TString &inFile = "G4EICDetector.root", const int nEvents = 0) {
+int Cluster_Testing(const char *inFile, const char *outFile, const char *detector, const int nEvents = 0) {
     // Set up Fun4All server
     Fun4AllServer *se = Fun4AllServer::instance();
     se->Verbosity(1);
@@ -18,22 +17,10 @@ int BEMC_Cluster_Testing(const TString &inFile = "G4EICDetector.root", const int
 
     InputManagers();
 
-
-    // Register Analysis
-    // CaloDstTool *bemcTester = new CaloDstTool("caloTester");
-    // bemcTester->set_detector("BECAL");
-    // bemcTester->set_output_file("bemc_test.root");
-    // se->registerSubsystem(bemcTester);
-
-    // CaloDstTool *femcTester = new CaloDstTool("caloTester");
-    // femcTester->set_detector("FEMC");
-    // femcTester->set_output_file("femc_test.root");
-    // se->registerSubsystem(femcTester);
-
-    CaloDstTool *eemchTester = new CaloDstTool("caloTester");
-    eemchTester->set_detector("EEMC");
-    eemchTester->set_output_file("eemc_test.root");
-    se->registerSubsystem(eemchTester);
+    CaloDstTool *caloTester = new CaloDstTool("caloTester");
+    caloTester->set_detector(detector);
+    caloTester->set_output_file(outFile);
+    se->registerSubsystem(caloTester);
 
 
     // Process Events
@@ -42,9 +29,7 @@ int BEMC_Cluster_Testing(const TString &inFile = "G4EICDetector.root", const int
 
 
     // Cleanup
-    // delete bemcTester;
-    // delete femcTester;
-    delete eemchTester;
+    delete caloTester;
     delete se;
     gSystem->Exit(0);
     return 0;
